@@ -40,4 +40,53 @@ public class MonoTest {
                 .log()
                 .subscribe(System.out::println);
     }
+
+    @Test
+    public void emptyConsumerMono(){
+        Mono.empty()
+                .log()
+                .subscribe(System.out::println,
+                        null,
+                        () -> System.out.println("Done"));
+    }
+
+    @Test
+    public void errorRuntimeExceptionMono(){
+        Mono.error(new RuntimeException())
+                .log()
+                .subscribe();
+    }
+
+    @Test
+    public void errorExceptionMono(){
+        Mono.error(new Exception())
+                .log()
+                .subscribe(System.out::println,
+                        e -> System.out.println("Error "+e));
+    }
+
+    @Test
+    public void errorDoOnErrorMono(){
+        Mono.error(new Exception())
+                .doOnError(e -> System.out.println("Error: "+e))
+                .log()
+                .subscribe();
+    }
+
+    @Test
+    public void errorOnErrorResumeMono(){
+        Mono.error(new Exception())
+                .onErrorResume(e -> {System.out.println("Caught: "+e);
+                                        return Mono.just("B");})
+                .log()
+                .subscribe();
+    }
+
+    @Test
+    public void errorOnErrorReturnMono(){
+        Mono.error(new Exception())
+                .onErrorReturn("B")
+                .log()
+                .subscribe();
+    }
 }
